@@ -1,4 +1,5 @@
 from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.options import Options
 import time
 import re
@@ -9,6 +10,7 @@ def take_full_page_screenshots(urls, profile_path=None):
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--headless')
+    chrome_options.binary_location = "/usr/bin/google-chrome"
 
     if profile_path:
         chrome_options.add_argument(f"user-data-dir={profile_path}")
@@ -30,6 +32,9 @@ def take_full_page_screenshots(urls, profile_path=None):
 
             start_load = time.time()
             driver.get(url)
+            WebDriverWait(driver, 3.5).until(
+                lambda d: d.execute_script("return document.readyState") == "complete"
+            )
             end_load = time.time()
 
             start_height = time.time()
@@ -59,12 +64,10 @@ def take_full_page_screenshots(urls, profile_path=None):
         driver.quit()
 
 
-# Usage example with profile path and list of URLs
-profile_path = r"C:\Users\abgka\AppData\Local\Google\Chrome\User Data"
+profile_path = "/home/server3090ti/.config/google-chrome/"
 urls = [
     'https://www.gartenhaus-gmbh.de',
     'https://www.soldan.de',
-    'https://www.example.com',
     'https://www.ebay.de/',
     'https://www.amazon.de/',
     'https://www.kleinanzeigen.de/',
